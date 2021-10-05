@@ -39,8 +39,11 @@ const inValidGatewayAddress = (others) => {
   };
 };
 const gatewayUri = '/api/1.0/gateway';
+const gatewayIdUri = (id) => {
+  return `/api/1.0/gateway/${id}`;
+};
 
-describe('Gateway endpoints', () => {
+describe('validate Gateway endpoints', () => {
   it('return status code of 400 if any of the required field is missing', async () => {
     const response = await request(app)
       .post(gatewayUri)
@@ -100,5 +103,35 @@ describe('Gateway endpoints', () => {
     await request(app).post(gatewayUri).send(validGatewayDetails());
     const gateway = await Gateway.find();
     expect(gateway.length).toBe(1);
+  });
+});
+
+describe('list and modify gateway endpoints', () => {
+  it('returns the list of gateways in the db', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+    await request(app)
+      .post(gatewayUri)
+      .send(validGatewayDetails({ address: '0.0.0.0', name: 'infraRed' }));
+    const response = await request(app).get(gatewayUri);
+    expect(response.status).toBe(200);
+    expect(response.body.gateways.length).toBe(2);
+  });
+  it('returns 404  and error message if gateway cannot be found', async () => {
+    const response = await request(app).get(
+      gatewayIdUri('615c8ef0256e9962b004c807')
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.body.msg).toBe('Gateway with this id does not exist');
+  });
+  it('returns gateway', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+    const gateway = await Gateway.findOne();
+
+    const response = await request(app).get(gatewayIdUri(gateway._id));
+
+    expect(response.status).toBe(200);
+    expect(gateway).toHaveProperty('address', gateway.address);
+    expect(gateway).toHaveProperty('name', gateway.name);
   });
 });

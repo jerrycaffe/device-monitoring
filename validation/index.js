@@ -41,3 +41,25 @@ module.exports.validatePeripheral = (req, res, next) => {
       .json({ msg: 'Ensure vendor is present and status is properly passed' });
   return next();
 };
+
+module.exports.validatePeripheralParam = (req, res, next) => {
+  const { peripheralId } = req.params;
+
+  if (peripheralId === 'undefined') {
+    return res.status(403).json({
+      msg: 'Ensure peripheral Id is included before you can proceed with this request',
+    });
+  }
+  return next();
+};
+
+module.exports.validateGatewayParam = (req, res, next) => {
+  const { gatewayId } = req.params;
+
+  if (gatewayId === 'undefined') {
+    return res.status(403).json({
+      msg: 'Ensure peripheral Id is included before you can proceed with this request',
+    });
+  }
+  return next();
+};

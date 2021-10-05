@@ -8,3 +8,7 @@ module.exports.createGatewayService = async (value) => {
 module.exports.findGatewayByIdService = async (id) => {
   return await GatewayModel.findById(new ObjectId(id));
 };
+
+module.exports.getAllGatewaysService = async () => {
+  return await GatewayModel.find();
+};

@@ -30,6 +30,7 @@ const validGatewayDetails = () => {
   };
 };
 const peripheralUri = '/api/1.0/gateway/peripheral';
+const peripheralIdUri = (id) => peripheralUri + '/' + id;
 const gatewayUri = '/api/1.0/gateway';
 const validPeripheralData = (other) => {
   return {
@@ -87,7 +88,7 @@ describe('Peripheral devices to be tested here', () => {
     expect(response.status).toBe(404);
 
     expect(response.body.msg).toBe(
-      'You cannot create a peripheral for a device that does not exist'
+      'You cannot create a peripheral for a gateway that does not exist'
     );
   });
   it('returns 201 when peripheral is successfully created', async () => {
@@ -102,5 +103,110 @@ describe('Peripheral devices to be tested here', () => {
     expect(response.status).toBe(201);
 
     expect(response.body.msg).toBe('Peripheral Device successfully created');
+  });
+
+  it('returns 403 and error message when trying to add peripheral devices after the length is 10', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+
+    const gateway = await Gateway.findOne();
+
+    await Peripheral.insertMany([
+      { gatewayId: gateway._id, vendor: 'fake1', status: 'online' },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake2',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake3',
+        status: 'online',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake4',
+        status: 'online',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake5',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake6',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake7',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake8',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake9',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake10',
+        status: 'offline',
+      },
+      {
+        gatewayId: gateway._id,
+        vendor: 'fake11',
+        status: 'offline',
+      },
+    ]);
+
+    const response = await request(app).post(peripheralUri).send({
+      gatewayId: gateway._id,
+      vendor: 'test',
+      status: 'online',
+    });
+
+    expect(response.status).toBe(403);
+    expect(response.body.msg).toBe('A gateway can only accommodate 10 devices');
+  });
+  it('returns status of 403 and error message when request param is missing while trying to delete peripheral', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+
+    const gateway = await Gateway.findOne();
+    await request(app).post(peripheralUri).send({
+      gatewayId: gateway._id,
+      vendor: 'test',
+      status: 'online',
+    });
+
+    const response = await request(app).delete(peripheralIdUri());
+
+    expect(response.status).toBe(403);
+
+    expect(response.body.msg).toBe(
+      'Ensure peripheral Id is included before you can proceed with this request'
+    );
+  });
+  it('returns status of 200 and success message when a device is removed from a gateway', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+
+    const gateway = await Gateway.findOne();
+    await request(app).post(peripheralUri).send({
+      gatewayId: gateway._id,
+      vendor: 'test',
+      status: 'online',
+    });
+
+    const response = await request(app).delete(peripheralIdUri(gateway._id));
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.msg).toBe(
+      'You have successfully removed this device from it gateway'
+    );
   });
 });
