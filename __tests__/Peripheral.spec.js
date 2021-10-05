@@ -1,13 +1,11 @@
 const request = require('supertest');
-const { response } = require('../app');
+
 const app = require('../app');
 
 // no more that 10 peripheral devices are allowed for a gateway
 // The service must also offer an operation for displaying information about all stored gateways (and their devices)
 // and an operation for displaying details for a single gateway.
 // Finally, it must be possible to add and remove a device from a gateway.
-
-// validate vendor (), status
 
 const db = require('../db');
 const Gateway = require('../model/Gateway');
@@ -79,11 +77,19 @@ describe('Peripheral devices to be tested here', () => {
       'Ensure vendor is present and status is properly passed'
     );
   });
-  // it('saves the user to the database', async () => {
-  //   await request(app).post(gatewayUri).send(validGatewayDetails());
-  //   const gateway = await Gateway.find();
-  //   expect(gateway.length).toBe(1);
-  // });
+  it('returns 404 and erro message if a user try creating peripheral with an invalid gatewayId', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+
+    const response = await request(app)
+      .post(peripheralUri)
+      .send(validPeripheralData());
+
+    expect(response.status).toBe(404);
+
+    expect(response.body.msg).toBe(
+      'You cannot create a peripheral for a device that does not exist'
+    );
+  });
   it('returns 201 when peripheral is successfully created', async () => {
     await request(app).post(gatewayUri).send(validGatewayDetails());
 
