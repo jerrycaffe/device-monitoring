@@ -107,15 +107,26 @@ describe('validate Gateway endpoints', () => {
 });
 
 describe('list and modify gateway endpoints', () => {
-  it('returns the list of gateways in the db', async () => {
+  it('returns the list of gateways in the db and its associated peripherals', async () => {
+    await request(app).post(gatewayUri).send(validGatewayDetails());
+    await request(app)
+      .post(gatewayUri)
+      .send(validGatewayDetails({ address: '0.0.0.0', name: 'infraRed' }));
+    const response = await request(app).get(gatewayUri);
+
+    expect(response.body.gateways.length).toBe(2);
+    expect(response.body.gateways[0]).toHaveProperty('peripheral');
+  });
+
+  it('returns status 200 hitting the endpoint to list all gateways and it associated peripheral', async () => {
     await request(app).post(gatewayUri).send(validGatewayDetails());
     await request(app)
       .post(gatewayUri)
       .send(validGatewayDetails({ address: '0.0.0.0', name: 'infraRed' }));
     const response = await request(app).get(gatewayUri);
     expect(response.status).toBe(200);
-    expect(response.body.gateways.length).toBe(2);
   });
+
   it('returns 404  and error message if gateway cannot be found', async () => {
     const response = await request(app).get(
       gatewayIdUri('615c8ef0256e9962b004c807')

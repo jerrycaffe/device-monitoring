@@ -9,7 +9,7 @@ const app = require('../app');
 
 const db = require('../db');
 const Gateway = require('../model/Gateway');
-const Peripheral = require('../model/Peripheral');
+const { insertManyGateway } = require('../dummyData');
 
 // eslint-disable-next-line no-undef
 beforeAll(() => {
@@ -110,59 +110,7 @@ describe('Peripheral devices to be tested here', () => {
 
     const gateway = await Gateway.findOne();
 
-    await Peripheral.insertMany([
-      { gatewayId: gateway._id, vendor: 'fake1', status: 'online' },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake2',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake3',
-        status: 'online',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake4',
-        status: 'online',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake5',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake6',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake7',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake8',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake9',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake10',
-        status: 'offline',
-      },
-      {
-        gatewayId: gateway._id,
-        vendor: 'fake11',
-        status: 'offline',
-      },
-    ]);
+    insertManyGateway(gateway._id);
 
     const response = await request(app).post(peripheralUri).send({
       gatewayId: gateway._id,
