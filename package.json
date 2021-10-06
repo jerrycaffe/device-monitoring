@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "jest --watch ",
-    "start": "nodemon index"
+    "start": "node index.js",
+    "run-dev": "nodemon index"
   },
   "jest": {
     "transform": {},
