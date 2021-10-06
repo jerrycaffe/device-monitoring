@@ -3,6 +3,7 @@ const {
   createPeripheralService,
   findAllPeripheralByIdService,
   removePeripheralService,
+  findPeripheralByIdService,
 } = require('../services/PeripheralService');
 
 module.exports.createPeripheral = async (req, res) => {
@@ -34,6 +35,7 @@ module.exports.createPeripheral = async (req, res) => {
         .status(403)
         .json({ msg: 'this vendor has been associated to a gateway' });
     const peripheral = await createPeripheralService(req.body);
+
     return res
       .status(201)
       .json({ msg: 'Peripheral Device successfully created', peripheral });
@@ -44,7 +46,16 @@ module.exports.createPeripheral = async (req, res) => {
 
 module.exports.removePeripheral = async (req, res) => {
   try {
-    await removePeripheralService(req.param.peripheralId);
+    const { peripheralId } = req.params;
+    const peripheralExist = await findPeripheralByIdService(peripheralId);
+
+    if (peripheralExist.length === 0)
+      return res
+        .status(403)
+        .json({ msg: 'You cannot remove a that does not exist' });
+
+    await removePeripheralService(peripheralId);
+
     return res.status(200).json({
       msg: 'You have successfully removed this device from it gateway',
     });

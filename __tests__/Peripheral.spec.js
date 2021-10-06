@@ -143,13 +143,15 @@ describe('Peripheral devices to be tested here', () => {
     await request(app).post(gatewayUri).send(validGatewayDetails());
 
     const gateway = await Gateway.findOne();
-    await request(app).post(peripheralUri).send({
+    const peripheral = await request(app).post(peripheralUri).send({
       gatewayId: gateway._id,
       vendor: 'test',
       status: 'online',
     });
 
-    const response = await request(app).delete(peripheralIdUri(gateway._id));
+    const response = await request(app).delete(
+      peripheralIdUri(peripheral.body.peripheral._id)
+    );
 
     expect(response.status).toBe(200);
 
