@@ -42,6 +42,24 @@ npm test
 
 ### running application locally requires you add mongodb connection uri see example.env for the required pattern
 
-### start application with
+### start application locally
 
-npm start
+npm run dev
+
+GET: `http://localhost:3000/api/1.0/gateway`
+
+### Create a gateway with valid ipv4 address and human readable name
+
+POST: `http://localhost:3000/api/1.0/gateway`
+
+### Get a gateway with the list of all devices attached to it
+
+GET: `http://localhost:3000/api/1.0/gateway/gatewayId`
+
+### Create a peripheral for a valid gateway provided devices under this gateway is less than 10 otherwise error is thrown
+
+POST:`http://localhost:3000/api/1.0/gateway/peripheral`
+
+### Remove a peripheral from a valid gateway
+
+DELETE:`http://localhost:3000/api/1.0/gateway/peripheral/peripheralId`
