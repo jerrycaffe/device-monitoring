@@ -1,4 +1,5 @@
-#MUSALA - SOFT (Device Monitoring)
+# MUSALA - SOFT (Device Monitoring)
+
 This project is managing gateways - master devices that control multiple peripheral devices.
 
 ## Project setup
