@@ -3,11 +3,10 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
 const Peripheral = new Schema({
-  UID: { String, required },
-  vendor: String,
-  dateCreated: Date,
+  vendor: { type: String, required: true, unique: true },
+  dateCreated: { type: Date, default: Date.now },
   status: { type: String, enum: ['online', 'offline'], default: 'online' },
-  gateway: { type: ObjectId, ref: 'Gateway' },
+  gatewayId: { type: ObjectId, ref: 'Gateway' },
 });
 Peripheral.set('autoIndex', true);
 module.exports = mongoose.model('Peripheral', Peripheral);
