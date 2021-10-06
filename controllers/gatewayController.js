@@ -15,22 +15,19 @@ module.exports.createGateway = async (req, res) => {
       { name: req.body.name },
       { address: req.body.address },
     ]);
-    console.log(isGatewayExist, 'this is gateway');
 
     if (isGatewayExist.length > 0)
       return res
         .status(403)
         .json({ msg: 'Gateway wih this information already exists' });
 
-    await createGatewayService(req.body);
-    let gateway = await findGatewayByValueService([{ name: req.body.name }]);
+    const gateway = await createGatewayService(req.body);
 
     return res.status(201).json({
       message: 'Gateway successfully created',
-      data: gateway[0],
+      data: gateway,
     });
   } catch (error) {
-    console.log(error.message);
     return res.status(500).json({ msg: 'Something went wrong' });
   }
 };
