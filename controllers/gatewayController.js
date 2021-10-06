@@ -2,6 +2,7 @@ const {
   createGatewayService,
   getAllGatewaysService,
   findGatewayByIdService,
+  findGatewayByValueService,
 } = require('../services/GatewayServices');
 const {
   findAllPeripheralByIdService,
@@ -10,12 +11,26 @@ const {
 module.exports.createGateway = async (req, res) => {
   try {
     // eslint-disable-next-line no-undef
-    const gateway = await createGatewayService(req.body);
+    const isGatewayExist = await findGatewayByValueService([
+      { name: req.body.name },
+      { address: req.body.address },
+    ]);
+    console.log(isGatewayExist, 'this is gateway');
 
-    return res
-      .status(201)
-      .json({ message: 'Gateway successfully created', gateway });
+    if (isGatewayExist.length > 0)
+      return res
+        .status(403)
+        .json({ msg: 'Gateway wih this information already exists' });
+
+    await createGatewayService(req.body);
+    let gateway = await findGatewayByValueService([{ name: req.body.name }]);
+
+    return res.status(201).json({
+      message: 'Gateway successfully created',
+      data: gateway[0],
+    });
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json({ msg: 'Something went wrong' });
   }
 };

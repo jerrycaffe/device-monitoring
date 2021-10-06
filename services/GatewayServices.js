@@ -9,6 +9,10 @@ module.exports.findGatewayByIdService = async (id) => {
   return await GatewayModel.findById(new ObjectId(id));
 };
 
+module.exports.findGatewayByValueService = async (value) => {
+  return await GatewayModel.find().or(value);
+};
+
 module.exports.getAllGatewaysService = async () => {
   return await GatewayModel.find();
 };

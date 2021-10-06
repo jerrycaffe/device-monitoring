@@ -1,5 +1,5 @@
 const PeripheralModel = require('./model/Peripheral');
-module.exports.insertManyGateway = async (id) => {
+module.exports.insertManyPeripheral = async (id) => {
   return await PeripheralModel.insertMany([
     { gatewayId: id, vendor: 'fake1', status: 'online' },
     {

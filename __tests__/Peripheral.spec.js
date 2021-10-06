@@ -7,9 +7,9 @@ const app = require('../app');
 // and an operation for displaying details for a single gateway.
 // Finally, it must be possible to add and remove a device from a gateway.
 
-const db = require('../db');
+const db = require('../database/testDb');
 const Gateway = require('../model/Gateway');
-const { insertManyGateway } = require('../dummyData');
+const { insertManyPeripheral } = require('../dummyData');
 
 // eslint-disable-next-line no-undef
 beforeAll(() => {
@@ -110,7 +110,7 @@ describe('Peripheral devices to be tested here', () => {
 
     const gateway = await Gateway.findOne();
 
-    insertManyGateway(gateway._id);
+    insertManyPeripheral(gateway._id);
 
     const response = await request(app).post(peripheralUri).send({
       gatewayId: gateway._id,

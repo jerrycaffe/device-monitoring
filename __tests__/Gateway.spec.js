@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../app');
 const Gateway = require('../model/Gateway');
-const db = require('../db');
+const db = require('../database/testDb');
 
 // eslint-disable-next-line no-undef
 beforeAll(() => {
